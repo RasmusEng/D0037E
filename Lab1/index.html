@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,31 +8,14 @@
 </head>
 <body>
     <header>HUS INDEX</header>
-        <div class="houseView">
-            <div class="house">
-                <img src="houseImages/256x256/00FC30M41U9X.jpg" alt="" srcset="">
-                <div class="houseInfo">Hus</div>
-            </div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-            <div class="house"></div>
-        </div>
+    <div class="filters"> <button class="btn active" onclick="filterSelection('all')"> Show all</button>
+        <button class="btn" onclick="filterSelection('cars')"> Recent</button>
+        <button class="btn" onclick="filterSelection('animals')"> Price High to Low</button>
+        <button class="btn" onclick="filterSelection('fruits')"> Price Low to High</button>
+    <div class="houseContainer">
+        <!-- Hus kommer att läggas till här dynamiskt via JavaScript -->
+    </div>
+
+    <script src="script.js"></script> <!-- Se till att JavaScript-filen heter 'app.js' eller det namn du använder -->
 </body>
 </html>
