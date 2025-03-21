@@ -20,7 +20,7 @@ async function fetchCSV() {
 
   if (priceIndex === -1 || imageIndex === -1) {
     console.error("Nödvändiga kolumner saknas i CSV-filen.");
-    return;
+    return []; // Return an empty array if required columns are missing
   }
 
   // Skapa JSON-objekt från CSV-data
@@ -29,14 +29,16 @@ async function fetchCSV() {
       ? parseInt(row[priceIndex]).toLocaleString()
       : "N/A"; // Formatera priset
     const image = row[imageIndex] || "defaultImage.jpg"; // Standardbild om ingen bild finns
-    const date = row[dateIndex] || "No date found"; // Standardbild om ingen bild finns
+    const date = row[dateIndex] || "No date found"; // Standarddatum om inget datum finns
     return { price, image, date };
   });
 
-  renderHouses(houses);
+  return houses; // Return the houses array
 }
+
 function renderHouses(houses) {
   const container = document.querySelector(".houseContainer"); // Använd befintlig container
+  container.innerHTML = ""; // Clear the container before rendering
   houses.forEach((house) => {
     const houseDiv = document.createElement("div");
     houseDiv.classList.add("house");
@@ -64,53 +66,48 @@ function renderHouses(houses) {
   });
 }
 
-filterSelection("all");
-function filterSelection(c) {
-  var x, i;
-  x = document.getElementsByClassName("filterDiv");
-  if (c == "all") c = "";
-  // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
-  for (i = 0; i < x.length; i++) {
-    w3RemoveClass(x[i], "show");
-    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
-  }
-}
+function sortHouses() {
+  const button = document.getElementById("High");
+  const button3 = document.getElementById("Recent");
+  const button2 = document.getElementById("Low");
 
-// Show filtered elements
-function w3AddClass(element, name) {
-  var i, arr1, arr2;
-  arr1 = element.className.split(" ");
-  arr2 = name.split(" ");
-  for (i = 0; i < arr2.length; i++) {
-    if (arr1.indexOf(arr2[i]) == -1) {
-      element.className += " " + arr2[i];
-    }
-  }
-}
-
-// Hide elements that are not selected
-function w3RemoveClass(element, name) {
-  var i, arr1, arr2;
-  arr1 = element.className.split(" ");
-  arr2 = name.split(" ");
-  for (i = 0; i < arr2.length; i++) {
-    while (arr1.indexOf(arr2[i]) > -1) {
-      arr1.splice(arr1.indexOf(arr2[i]), 1);
-    }
-  }
-  element.className = arr1.join(" ");
-}
-
-// Add active class to the current control button (highlight it)
-var btnContainer = document.getElementById("myBtnContainer");
-var btns = btnContainer.getElementsByClassName("btn");
-for (var i = 0; i < btns.length; i++) {
-  btns[i].addEventListener("click", function () {
-    var current = document.getElementsByClassName("active");
-    current[0].className = current[0].className.replace(" active", "");
-    this.className += " active";
+  button.addEventListener("click", async function () {
+    button.className = "btn active";
+    button2.className = "btn";
+    button3.className = "btn";
+    const houses = await fetchCSV(); // Fetch the houses array
+    houses.sort((a, b) => {
+      const priceA = parseInt(a.price.replace(/,/g, "")) || 0;
+      const priceB = parseInt(b.price.replace(/,/g, "")) || 0;
+      return priceB - priceA; // Sortera i fallande ordning
+    });
+    renderHouses(houses); // Render the sorted houses
   });
+
+  button2.addEventListener("click", async function () {
+    button2.className = "btn active";
+    button.className = "btn";
+    button3.className = "btn";
+    const houses = await fetchCSV(); // Fetch the houses array
+    houses.sort((a, b) => {
+      const priceA = parseInt(a.price.replace(/,/g, "")) || 0;
+      const priceB = parseInt(b.price.replace(/,/g, "")) || 0;
+      return priceA - priceB; // Sortera i stigande ordning
+    });
+    renderHouses(houses); // Render the sorted houses
+  });
+
+  button3.addEventListener("click", async function () {
+    button3.className = "btn active";
+    button.className = "btn";
+    button2.className = "btn";
+    const houses = await fetchCSV(); // Fetch the houses array
+    houses.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sortera efter datum
+    renderHouses(houses); // Render the sorted houses
+  });
+
 }
 
-// Kör funktionen när sidan laddas
-fetchCSV();
+// Kör funktionerna när sidan laddas
+fetchCSV().then(renderHouses); // Fetch and render houses on page load
+sortHouses(); // Attach sorting functionality to buttons
